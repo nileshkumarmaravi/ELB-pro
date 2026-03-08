@@ -1,0 +1,220 @@
+1. What (Project Overview)
+
+This project creates a highly available and auto-scaling web application using:
+
+Amazon Web Services
+
+Amazon EC2
+
+AWS Auto Scaling
+
+AWS Elastic Load Balancing
+
+
+             User
+              |
+              |
+        Application Load Balancer
+           /            \
+          /              \
+      EC2 Instance    EC2 Instance
+           \              /
+            \            /
+            Auto Scaling Group
+
+
+Step 1: Launch EC2 Instance (Base Server)
+
+Go to Amazon EC2
+
+Create instance:
+
+Name
+
+web-server-template
+
+Instance type
+
+t2.micro
+
+Security Group
+
+Allow:
+
+SSH (22)
+
+HTTP (80)
+
+Connect to instance.
+
+Step 2: Install Web Server
+
+Run:
+
+sudo apt update
+sudo apt install nginx -y
+
+Start service:
+
+sudo systemctl start nginx
+
+Enable service:
+
+sudo systemctl enable nginx
+Step 3: Create Web Page
+sudo nano /var/www/html/index.html
+
+Add:
+
+<h1>Welcome to Nilesh Auto Scaling Project</h1>
+<h2>Server is running successfully</h2>
+
+Save file.
+
+Step 4: Create AMI (Machine Image)
+
+Go to Amazon EC2
+
+Select instance → Actions
+
+Create Image
+
+Name:
+
+nilesh-web-ami
+
+This AMI will be used by Auto Scaling.
+
+Step 5: Create Target Group
+
+Go to AWS Elastic Load Balancing
+
+Click:
+
+Target Groups
+Create Target Group
+
+Settings:
+
+Type
+
+Instances
+
+Protocol
+
+HTTP
+
+Port
+
+80
+
+Name
+
+nilesh-target-group
+Step 6: Create Application Load Balancer
+
+Create Load Balancer.
+
+Select:
+
+Application Load Balancer
+
+Settings:
+
+Name
+
+nilesh-alb
+
+Scheme
+
+Internet-facing
+
+Listener
+
+HTTP : 80
+
+Attach Target Group.
+
+Step 7: Create Launch Template
+
+Go to Amazon EC2
+
+Create:
+
+Launch Template
+
+Settings:
+
+Template name
+
+nilesh-template
+
+AMI
+
+nilesh-web-ami
+
+Instance type
+
+t2.micro
+
+Security group
+
+Allow HTTP
+Step 8: Create Auto Scaling Group
+
+Go to AWS Auto Scaling
+
+Create Auto Scaling Group.
+
+Settings:
+
+Launch Template
+
+nilesh-template
+
+VPC
+
+Default
+
+Subnets
+
+2 Availability Zones
+
+Attach to Load Balancer
+
+nilesh-target-group
+Step 9: Configure Scaling Policy
+
+Minimum instances
+
+2
+
+Maximum instances
+
+4
+
+Desired capacity
+
+2
+
+Scaling policy:
+
+CPU utilization 70%
+
+If CPU > 70% → new server launches automatically.
+
+Step 10: Test the Project
+
+Copy Load Balancer DNS
+
+Example:
+
+nilesh-alb-123456.ap-south-1.elb.amazonaws.com
+
+Open browser.
+
+Website loads.
+
+If traffic increases:
+
+New EC2 instances automatically start.
